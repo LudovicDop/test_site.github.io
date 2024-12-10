@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte avec API Google Maps</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            color: #007BFF;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        header h2 {
+            color: #555;
+            font-size: 1.5rem;
+            font-weight: 400;
+        }
+
+        #map-container {
+            max-width: 800px;
+            margin: 20px auto;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #map {
+            height: 500px; /* Hauteur de la carte */
+            width: 100%;   /* Largeur de la carte */
+        }
+
+        .info {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .info p {
+            margin: 10px 0;
+        }
+
+        .info a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .info a:hover {
+            text-decoration: underline;
+        }
+
+        .satisfaction {
+            max-width: 800px;
+            margin: 30px auto;
+            text-align: center;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .satisfaction h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #444;
+        }
+
+        .rating {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .rating button {
+            border: none;
+            background: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, color 0.3s ease;
+        }
+
+        .rating button:hover,
+        .rating button.selected {
+            color: #007BFF;
+            transform: scale(1.2);
+        }
+
+        .rating button:focus {
+            outline: none;
+        }
+
+        .feedback {
+            margin-top: 10px;
+            font-size: 1rem;
+            color: #444;
+        }
+
+        /* Search Container */
+        .search-container {
+            max-width: 800px;
+            margin: 30px auto;
+            text-align: center;
+        }
+
+        .search-container input {
+            width: 70%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+
+        .search-container button {
+            padding: 10px 15px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .results-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 10px;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-container div {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .results-container div:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Search Your City</h1>
+        <h2>Carte Google Maps</h2>
+    </header>
+
+    <!-- Map Container -->
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+
+    <!-- Search Input -->
+    <div class="search-container">
+        <input type="text" id="search-city" placeholder="Enter your city (e.g., Paris)">
+        <button onclick="searchCity()">Search</button>
+    </div>
+
+    <!-- Results Container -->
+    <div class="results-container" id="results-container">
+        <p>Enter a city name to see results.</p>
+    </div>
+
+    <!-- Satisfaction Touch Bar -->
+    <div class="satisfaction">
+        <h3>Êtes-vous satisfait du résultat ?</h3>
+        <div class="rating">
+            <button data-rating="1">😡</button>
+            <button data-rating="2">😞</button>
+            <button data-rating="3">😐</button>
+            <button data-rating="4">😊</button>
+            <button data-rating="5">😍</button>
+        </div>
+        <div class="feedback">Click on an emoji to rate!</div>
+    </div>
+
+    <script>
+        // Initialize Google Maps
+        function initMap() {
+            const location = { lat: 48.8566, lng: 2.3522 }; // Default location (Paris)
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: location,
+            });
+
+            const marker = new google.maps.Marker({
+                position: location,
+                map: map,
+            });
+        }
+
+        // Search City Functionality
+        function searchCity() {
+            const city = document.getElementById("search-city").value.trim();
+
+            if (!city) {
+                alert("Please enter a city name.");
+                return;
+            }
+
+            // Fetch JSON data (Replace with your file path)
+            fetch("../acceslibre_agglo_blois.json")
+                .then(response => response.json())
+                .then(data => {
+                    const results = data.filter(item => item.commune.toLowerCase() === city.toLowerCase());
+                    const resultsContainer = document.getElementById("results-container");
+
+                    // Clear previous results
+                    resultsContainer.innerHTML = "";
+
+                    if (results.length === 0) {
+                        resultsContainer.innerHTML = `<p>No results found for "${city}".</p>`;
+                        return;
+                    }
+
+                    // Display results
+                    results.forEach(item => {
+                        const div = document.createElement("div");
+                        div.innerHTML = `
+                            <h2>${item.name || "Unknown Name"}</h2>
+                            <p><strong>Address:</strong> ${item.numero || ""} ${item.voie || ""}, ${item.postal_code || ""}</p>
+                            <p><strong>Latitude:</strong> ${item.latitude}</p>
+                            <p><strong>Longitude:</strong> ${item.longitude}</p>
+                            <p><strong>Site Internet:</strong> ${item.site_internet ? `<a href="${item.site_internet}" target="_blank">${item.site_internet}</a>` : "No site available"}</p>
+                        `;
+                        resultsContainer.appendChild(div);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching data:", error);
+                    document.getElementById("results-container").innerHTML = `<p>Error loading data. Please try again later.</p>`;
+                });
+        }
+    </script>
+
+    <!-- Google Maps API -->
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
+    </script>
+    <script>
+    // Récupérer la ville depuis l'URL
+    function getCityFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("ville") || "";
+    }
+
+    // Initialisation automatique de la recherche
+    function initSearch() {
+        const city = getCityFromURL(); // Récupère la ville depuis l'URL
+
+        if (city) {
+            const input = document.getElementById("search-city");
+            input.value = city; // Préremplit le champ de recherche
+            searchCity(); // Lance automatiquement la recherche
+        }
+    }
+
+    // Fonction de recherche de ville
+    function searchCity() {
+        const city = document.getElementById("search-city").value.trim();
+
+        if (!city) {
+            alert("Veuillez entrer un nom de ville.");
+            return;
+        }
+
+        // Fetch JSON data (Replace with your file path)
+        fetch("../acceslibre_agglo_blois.json")
+            .then(response => response.json())
+            .then(data => {
+                const results = data.filter(item => item.commune.toLowerCase() === city.toLowerCase());
+                const resultsContainer = document.getElementById("results-container");
+
+                // Clear previous results
+                resultsContainer.innerHTML = "";
+
+                if (results.length === 0) {
+                    resultsContainer.innerHTML = `<p>Aucun résultat trouvé pour "${city}".</p>`;
+                    return;
+                }
+
+                // Display results
+                results.forEach(item => {
+                    const div = document.createElement("div");
+                    div.innerHTML = `
+                        <h2>${item.name || "Nom inconnu"}</h2>
+                        <p><strong>Adresse:</strong> ${item.numero || ""} ${item.voie || ""}, ${item.postal_code || ""}</p>
+                        <p><strong>Latitude:</strong> ${item.latitude}</p>
+                        <p><strong>Longitude:</strong> ${item.longitude}</p>
+                        <p><strong>Site Internet:</strong> ${item.site_internet ? `<a href="${item.site_internet}" target="_blank">${item.site_internet}</a>` : "Non disponible"}</p>
+                    `;
+                    resultsContainer.appendChild(div);
+                });
+            })
+            .catch(error => {
+                console.error("Erreur lors du chargement des données:", error);
+                document.getElementById("results-container").innerHTML = `<p>Erreur lors du chargement des données. Veuillez réessayer plus tard.</p>`;
+            });
+    }
+
+    // Appel de la fonction initSearch au chargement de la page
+    window.onload = initSearch;
+</script>
+
+</body>
+</html>
