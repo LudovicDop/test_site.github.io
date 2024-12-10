@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultats de Recherche</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            color: #007BFF;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        header h2 {
+            color: #555;
+            font-size: 1.5rem;
+            font-weight: 400;
+        }
+
+        .main-container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        #map-container {
+            flex: 2;
+            height: 600px; /* Height of the map section */
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        #map-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the image covers the entire container */
+            border-radius: 8px;
+        }
+
+        .results-container {
+            flex: 1;
+            max-width: 400px;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+        }
+
+        .results-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .results-container div {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f8f8;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .pagination button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background: #007BFF;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .pagination button:hover {
+            background: #0056b3;
+        }
+
+        .pagination button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .home-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .home-button:hover {
+            background-color: #0056b3;
+        }
+
+        .search-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+    <button class="home-button" onclick="window.location.href='index.html'">Home</button>
+    
+    <header>
+        <h1>Résultats pour la ville : <span id="city-name"></span></h1>
+    </header>
+
+    <div class="main-container">
+        <!-- Map Container -->
+        <div id="map-container">
+            <img src="../../photos/map.png" alt="Carte statique représentant la ville recherchée">
+        </div>
+
+        <!-- Results Container -->
+        <div class="results-container" id="results-container">
+            <div id="results-list">
+                <p>Les résultats de recherche s'affichent ici.</p>
+            </div>
+            <div class="pagination">
+                <button id="prev-button" onclick="changePage(-1)" disabled>Previous</button>
+                <button id="next-button" onclick="changePage(1)" disabled>Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 0; // Index de la page actuelle
+        let paginatedResults = []; // Stocke les résultats paginés
+
+        // Récupérer la ville depuis l'URL
+        function getCityFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get("ville") || "Ville inconnue";
+        }
+
+        // Afficher la ville recherchée
+        function displayCityName() {
+            const cityName = getCityFromURL();
+            document.getElementById("city-name").textContent = cityName;
+        }
+
+        // Recherche de ville
+        function searchCity() {
+            const city = getCityFromURL();
+
+            fetch("../acceslibre_agglo_blois.json")
+                .then(response => response.json())
+                .then(data => {
+                    paginatedResults = data.filter(item => item.commune.toLowerCase() === city.toLowerCase());
+                    currentPage = 0; // Réinitialise la pagination
+                    updateResults();
+                })
+                .catch(error => {
+                    console.error("Erreur lors du chargement des données:", error);
+                    document.getElementById("results-list").innerHTML = `<p>Erreur lors du chargement des données. Veuillez réessayer plus tard.</p>`;
+                });
+        }
+
+        // Met à jour les résultats affichés pour la page actuelle
+        function updateResults() {
+            const resultsList = document.getElementById("results-list");
+            resultsList.innerHTML = "";
+
+            const start = currentPage * 3;
+            const end = start + 3;
+            const pageResults = paginatedResults.slice(start, end);
+
+            if (pageResults.length === 0) {
+                resultsList.innerHTML = `<p>Aucun résultat trouvé.</p>`;
+                return;
+            }
+
+            pageResults.forEach(item => {
+                const div = document.createElement("div");
+                div.innerHTML = `
+                    <h2>${item.name || "Nom inconnu"}</h2>
+                    <p><strong>Adresse:</strong> ${item.numero || ""} ${item.voie || ""}, ${item.postal_code || ""}</p>
+                    <p><strong>Latitude:</strong> ${item.latitude}</p>
+                    <p><strong>Longitude:</strong> ${item.longitude}</p>
+                    <p><strong>Site Internet:</strong> ${item.site_internet ? `<a href="${item.site_internet}" target="_blank">${item.site_internet}</a>` : "Non disponible"}</p>
+                `;
+                resultsList.appendChild(div);
+            });
+
+            document.getElementById("prev-button").disabled = currentPage === 0;
+            document.getElementById("next-button").disabled = end >= paginatedResults.length;
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            updateResults();
+        }
+
+        // Initialisation
+        window.onload = () => {
+            displayCityName();
+            searchCity();
+        };
+    </script>
+</body>
+</html>
