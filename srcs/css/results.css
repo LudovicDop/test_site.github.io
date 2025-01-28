@@ -1,0 +1,121 @@
+/* Styles généraux */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #e0f7fa;
+    color: #01579b;
+    height: 100%;
+}
+
+a {
+    color: #0288d1;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Bouton Home */
+.home-button {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #0288d1;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.home-button img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.home-button:hover {
+    background-color: #0277bd;
+}
+
+/* Barre de progression */
+.progress-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 60px auto 20px auto;
+    text-align: center;
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #b3e5fc;
+    border-radius: 5px;
+    overflow: hidden;
+    height: 20px;
+    margin-bottom: 10px;
+}
+
+.progress {
+    height: 100%;
+    background-color: #0288d1;
+    width: 0;
+    border-radius: 5px;
+    animation: loadProgress 1s forwards;
+}
+
+@keyframes loadProgress {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+/* Conteneur principal */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+/* Section de la carte */
+.map-section {
+    flex: 1 1 300px;
+    max-width: 500px;
+    margin: 10px;
+}
+
+.map-section img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Section des résultats */
+.results-section {
+    flex: 2 1 300px;
+    max-width: 700px;
+    margin: 10px;
+}
+
+.results-section h1 {
+    margin-top: 0;
+    color: #0288d1;
+}
+
+.result-item {
+    background-color: #ffffff;
+    border: 1px solid #0288d1;
+    border-radius: 5px;
+    margin
+::contentReference[oaicite:1]{index=1}
+ 
+

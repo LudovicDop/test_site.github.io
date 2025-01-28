@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Séjour accessible - Visite</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <script>
+        // Fonction pour récupérer les paramètres de l'URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Fonction pour afficher le nom de la ville dans la question
+        function displayCityName() {
+            const city = getQueryParam('destination');
+            if (city) {
+                const questionElement = document.getElementById('question');
+                questionElement.textContent = `À ${city}, je veux visiter :`;
+                // Ajouter un champ caché pour transmettre la ville
+                const form = document.querySelector('form');
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'destination';
+                hiddenInput.value = city;
+                form.appendChild(hiddenInput);
+            }
+        }
+
+        // Appel de la fonction lors du chargement de la page
+        window.onload = displayCityName;
+    </script>
+</head>
+<body>
+    <!-- Bouton Home -->
+    <a href="../index.html" class="home-button">
+        <img src="../icon/home.svg" alt="Icône de maison">
+        Home
+    </a>
+
+    <!-- Barre de progression -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress" style="width: 33.33%;"></div>
+        </div>
+        <p>Étape 1 sur 3</p>
+    </div>
+
+    <div class="container">
+        <h1>Séjour accessible</h1>
+        <form action="search.html" method="get">
+            <label id="question" for="attraction">À [ville], je veux visiter :</label>
+            <input type="text" id="attraction" name="attraction" placeholder="Entrez le nom de l'attraction" required>
+            <button type="submit">
+                <img src="../icon/loupe.svg" alt="Icône de loupe">
+                Rechercher
+            </button>
+        </form>
+    </div>
+</body>
+</html>

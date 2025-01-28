@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Séjour accessible - Recherche</title>
+    <link rel="stylesheet" href="../css/search.css">
+    <script>
+        // Fonction pour récupérer les paramètres de l'URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Fonction pour afficher les informations précédemment saisies
+        function displayPreviousInfo() {
+            const city = getQueryParam('destination');
+            const attraction = getQueryParam('attraction');
+            if (city && attraction) {
+                document.getElementById('info').textContent = `Ville : ${city} | Lieu d'intérêt : ${attraction}`;
+            } else {
+                document.getElementById('info').textContent = 'Informations manquantes.';
+            }
+        }
+
+        // Appel de la fonction lors du chargement de la page
+        window.onload = displayPreviousInfo;
+    </script>
+</head>
+<body>
+    <!-- Bouton Home -->
+    <a href="../index.html" class="home-button">
+        <img src="../icon/home.svg" alt="Icône de maison">
+        Home
+    </a>
+
+    <!-- Barre de progression -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress" style="width: 66.66%;"></div>
+        </div>
+        <p>Étape 2 sur 3</p>
+    </div>
+
+    <div class="container">
+        <h1>Séjour accessible</h1>
+        <p id="info">Chargement des informations...</p>
+
+        <!-- Catégorie "Où manger ?" -->
+        <section class="category">
+            <h2>Où manger ?</h2>
+			<form action="results.html" method="get">
+				<fieldset>
+					<legend>Veuillez indiquer vos besoins :</legend>
+					<br>
+					<label class="switch-container">
+						<img src="../icon/visuel.png" alt="Description de l'icône" class="icon" style="height: 30px; width: 30px; margin-left: 8px;">
+						<div class="switch">
+							<input type="checkbox" name="difficultes" value="voir">
+							<span class="slider"></span>
+						</div>
+						<span class="label-text">Difficultés à voir</span>
+					</label>									
+
+					<label class="switch-container">
+						<img src="../icon/ear.png" alt="Description de l'icône" class="icon" style="height: 40px; width: 40px;">
+						<div class="switch">
+							<input type="checkbox" name="difficultes" value="entendre">
+							<span class="slider"></span>
+						</div>
+						<span class="label-text">Difficultés à entendre</span>
+					</label>
+
+					<label class="switch-container">
+						<img src="../icon/brain.png" alt="Description de l'icône" class="icon" style="height: 40px; width: 40px;">
+						<div class="switch">
+							<input type="checkbox" name="difficultes" value="comprendre">
+							<span class="slider"></span>
+						</div>
+						<span class="label-text">Difficultés à comprendre</span>
+					</label>
+
+					<label class="switch-container">
+						<img src="../icon/wheelchair.png" alt="Description de l'icône" class="icon" style="height: 40px; width: 40px;">
+						<div class="switch">
+							<input type="checkbox" name="difficultes" value="deplacer">
+							<span class="slider"></span>
+						</div>
+						<span class="label-text">Difficultés à se déplacer</span>
+					</label>
+
+				</fieldset>
+				<button type="submit">
+					<img src="../icon/loupe.svg" alt="Icône de loupe">
+					Rechercher
+				</button>
+			</form>
+			
+        </section>
+
+        <!-- Catégorie "Où dormir ?" -->
+        <section class="category">
+            <h2>Où dormir ?</h2>
+			<form action="results.html" method="get">
+				<fieldset>
+					<legend>Veuillez indiquer vos besoins :</legend>
+					<br>
+					<label class="switch-container">
+						<img src="../icon/visuel.png" alt="Description de l'icône" class="icon" style="height: 30px; width: 30px; margin-left: 8px;">
+						<div class="switch">
+							<input type="checkbox" name="difficultes" value="voir">
+							<span class="slider"></span>
+						</div>
+						<span class="label-text">Difficultés à voir</span>
+					</label>									
+
+					<label class="switch-container">
+						<img src="../icon/ear.png" alt="Description de l'icône" class="icon" style="height: 40px; width: 40px;">
+						<div class="switch">
+							<input type="checkbox" name="difficultes" value="entendre">
+							<span class="slider"></span>
+						</div>
+						<span class="label-text">Difficultés à entendre</span>
+					</label>
+
+					<label class="switch-container">
+						<img src="../icon/brain.png" alt="Description de l'icône" class="icon" style="height: 40px; width: 40px;">
+						<div class="switch">
+							<input type="checkbox" name="difficultes" value="comprendre">
+							<span class="slider"></span>
+						</div>
+						<span class="label-text">Difficultés à comprendre</span>
+					</label>
+
+					<label class="switch-container">
+						<img src="../icon/wheelchair.png" alt="Description de l'icône" class="icon" style="height: 40px; width: 40px;">
+						<div class="switch">
+							<input type="checkbox" name="difficultes" value="deplacer">
+							<span class="slider"></span>
+						</div>
+						<span class="label-text">Difficultés à se déplacer</span>
+					</label>
+
+				</fieldset>
+				<button type="submit">
+					<img src="../icon/loupe.svg" alt="Icône de loupe">
+					Rechercher
+				</button>
+			</form>
+			
+        </section>
+    </div>
+</body>
+</html>
